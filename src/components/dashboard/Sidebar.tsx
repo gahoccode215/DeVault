@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  ChevronDown,
   Clock,
   PanelLeftClose,
   PanelLeftOpen,
@@ -31,6 +33,45 @@ function collectionItemCount(collectionId: string) {
   return items.filter((item) => item.collectionId === collectionId).length;
 }
 
+function SidebarSection({
+  title,
+  open,
+  onToggle,
+  children,
+}: {
+  title: string;
+  open: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between rounded-md px-2 py-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase hover:bg-muted hover:text-foreground"
+      >
+        <span>{title}</span>
+        <ChevronDown
+          className={cn(
+            "h-3.5 w-3.5 shrink-0 transition-transform duration-200",
+            !open && "-rotate-90"
+          )}
+        />
+      </button>
+      <div
+        className={cn(
+          "grid transition-all duration-200 ease-in-out",
+          open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        )}
+      >
+        <ul className="space-y-0.5 overflow-hidden">{children}</ul>
+      </div>
+    </div>
+  );
+}
+
 function SidebarContent({
   collapsed,
   onToggleCollapse,
@@ -41,6 +82,9 @@ function SidebarContent({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
+  const [favoritesOpen, setFavoritesOpen] = useState(true);
+  const [recentOpen, setRecentOpen] = useState(false);
+
   const favoriteCollections = collections.filter((c) => c.isFavorite);
   const recentCollections = [...collections]
     .sort(
@@ -50,8 +94,8 @@ function SidebarContent({
 
   return (
     <div className="flex h-full w-full flex-col">
-      <nav className="flex-1 space-y-6 overflow-y-auto p-4">
-        <ul className="space-y-1">
+      <nav className="scrollbar-thin flex-1 space-y-4 overflow-y-auto p-3">
+        <ul className="space-y-0.5">
           {itemTypes.map((type) => {
             const href = `/items/${typeSlug(type.name)}`;
             const active = pathname === href;
@@ -63,7 +107,7 @@ function SidebarContent({
                   onClick={onNavigate}
                   title={collapsed ? type.name : undefined}
                   className={cn(
-                    "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
+                    "flex items-center gap-2 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
                     active && "bg-muted text-foreground",
                     collapsed && "justify-center"
                   )}
@@ -77,52 +121,50 @@ function SidebarContent({
         </ul>
 
         {!collapsed && (
-          <div>
-            <h3 className="mb-2 px-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-              Favorite Collections
-            </h3>
-            <ul className="space-y-1">
-              {favoriteCollections.length === 0 && (
-                <li className="px-2 text-sm text-muted-foreground">
-                  No favorites yet
-                </li>
-              )}
-              {favoriteCollections.map((collection) => (
-                <li
-                  key={collection.id}
-                  className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
-                >
-                  <Star className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  <span className="flex-1 truncate">{collection.name}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {collectionItemCount(collection.id)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <SidebarSection
+            title="Favorite Collections"
+            open={favoritesOpen}
+            onToggle={() => setFavoritesOpen((value) => !value)}
+          >
+            {favoriteCollections.length === 0 && (
+              <li className="px-2 py-1 text-sm text-muted-foreground">
+                No favorites yet
+              </li>
+            )}
+            {favoriteCollections.map((collection) => (
+              <li
+                key={collection.id}
+                className="flex items-center gap-2 rounded-md px-2 py-1 text-sm hover:bg-muted"
+              >
+                <Star className="h-4 w-4 shrink-0 fill-amber-400 text-amber-400" />
+                <span className="flex-1 truncate">{collection.name}</span>
+                <span className="text-xs text-muted-foreground">
+                  {collectionItemCount(collection.id)}
+                </span>
+              </li>
+            ))}
+          </SidebarSection>
         )}
 
         {!collapsed && (
-          <div>
-            <h3 className="mb-2 px-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-              Recent Collections
-            </h3>
-            <ul className="space-y-1">
-              {recentCollections.map((collection) => (
-                <li
-                  key={collection.id}
-                  className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
-                >
-                  <Clock className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  <span className="flex-1 truncate">{collection.name}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {collectionItemCount(collection.id)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <SidebarSection
+            title="Recent Collections"
+            open={recentOpen}
+            onToggle={() => setRecentOpen((value) => !value)}
+          >
+            {recentCollections.map((collection) => (
+              <li
+                key={collection.id}
+                className="flex items-center gap-2 rounded-md px-2 py-1 text-sm hover:bg-muted"
+              >
+                <Clock className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <span className="flex-1 truncate">{collection.name}</span>
+                <span className="text-xs text-muted-foreground">
+                  {collectionItemCount(collection.id)}
+                </span>
+              </li>
+            ))}
+          </SidebarSection>
         )}
       </nav>
 
