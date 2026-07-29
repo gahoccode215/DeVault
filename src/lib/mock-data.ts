@@ -10,12 +10,13 @@ export interface User {
 export interface ItemType {
   id: string;
   name: string;
-  icon: string;
 }
 
 export interface Collection {
   id: string;
   name: string;
+  isFavorite: boolean;
+  updatedAt: string;
 }
 
 export interface Item {
@@ -41,21 +42,46 @@ export const currentUser: User = {
 };
 
 export const itemTypes: ItemType[] = [
-  { id: "type-snippet", name: "Snippet", icon: "📄" },
-  { id: "type-prompt", name: "Prompt", icon: "💬" },
-  { id: "type-note", name: "Note", icon: "📝" },
-  { id: "type-command", name: "Command", icon: "⌘" },
-  { id: "type-file", name: "File", icon: "📁" },
-  { id: "type-image", name: "Image", icon: "🖼️" },
-  { id: "type-url", name: "URL", icon: "🔗" },
+  { id: "type-snippet", name: "Snippet" },
+  { id: "type-prompt", name: "Prompt" },
+  { id: "type-note", name: "Note" },
+  { id: "type-command", name: "Command" },
+  { id: "type-file", name: "File" },
+  { id: "type-image", name: "Image" },
+  { id: "type-url", name: "URL" },
 ];
 
 export const collections: Collection[] = [
-  { id: "collection-react-patterns", name: "React Patterns" },
-  { id: "collection-context-files", name: "Context Files" },
-  { id: "collection-python-snippets", name: "Python Snippets" },
-  { id: "collection-shell-devops", name: "Shell & DevOps" },
-  { id: "collection-design-refs", name: "Design Refs" },
+  {
+    id: "collection-react-patterns",
+    name: "React Patterns",
+    isFavorite: true,
+    updatedAt: "2026-07-29T13:00:00.000Z",
+  },
+  {
+    id: "collection-context-files",
+    name: "Context Files",
+    isFavorite: false,
+    updatedAt: "2026-07-27T08:00:00.000Z",
+  },
+  {
+    id: "collection-python-snippets",
+    name: "Python Snippets",
+    isFavorite: false,
+    updatedAt: "2026-07-28T09:00:00.000Z",
+  },
+  {
+    id: "collection-shell-devops",
+    name: "Shell & DevOps",
+    isFavorite: true,
+    updatedAt: "2026-07-28T15:00:00.000Z",
+  },
+  {
+    id: "collection-design-refs",
+    name: "Design Refs",
+    isFavorite: false,
+    updatedAt: "2026-07-28T09:00:00.000Z",
+  },
 ];
 
 export const tags: string[] = [
