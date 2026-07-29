@@ -1,12 +1,21 @@
-import { Database, Plus, Search } from "lucide-react";
+import { Database, Menu, Plus, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export function TopBar() {
+export function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
   return (
     <header className="grid grid-cols-3 items-center gap-4 border-b border-border px-6 py-4">
       <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          aria-label="Open sidebar"
+          onClick={onMenuClick}
+        >
+          <Menu />
+        </Button>
         <div className="flex h-8 w-8 items-center justify-center rounded-md bg-emerald-600 text-white">
           <Database className="h-4 w-4" />
         </div>
